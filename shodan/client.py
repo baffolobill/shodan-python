@@ -253,7 +253,7 @@ class Shodan:
             """
             return self.parent._request('/org/member/{}'.format(user), {}, method='DELETE')['success']
 
-    def __init__(self, key, proxies=None):
+    def __init__(self, key, proxies=None, timeout=None):
         """Initializes the API object.
 
         :param key: The Shodan API key.
@@ -272,6 +272,7 @@ class Shodan:
         self.org = self.Organization(self)
         self.tools = self.Tools(self)
         self.stream = Stream(key, proxies=proxies)
+        self.timeout = timeout
         self._session = requests.Session()
         if proxies:
             self._session.proxies.update(proxies)
@@ -301,13 +302,13 @@ class Shodan:
         try:
             method = method.lower()
             if method == 'post':
-                data = self._session.post(base_url + function, params)
+                data = self._session.post(base_url + function, params, timeout=self.timeout)
             elif method == 'put':
-                data = self._session.put(base_url + function, params=params)
+                data = self._session.put(base_url + function, params=params, timeout=self.timeout)
             elif method == 'delete':
-                data = self._session.delete(base_url + function, params=params)
+                data = self._session.delete(base_url + function, params=params, timeout=self.timeout)
             else:
-                data = self._session.get(base_url + function, params=params)
+                data = self._session.get(base_url + function, params=params, timeout=self.timeout)
         except Exception:
             raise APIError('Unable to connect to Shodan')
 
